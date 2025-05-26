@@ -1,25 +1,24 @@
 import datetime
-from reportlab.lib.pagesizes import A5
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
-from reportlab.lib import colors
 import random
 from PIL import Image, ImageTk
 import tkinter as tk
 import fitz
+from functions import *
 
-def show_ticket(png_path):
+def show_chek(png_path):
     doc = fitz.open(png_path)
     page = doc.load_page(0)
     pix = page.get_pixmap()
     img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
 
     root = tk.Tk()
-    root.title("Bilet")
+    root.title("Chek")
     tk_img = ImageTk.PhotoImage(img)
     label = tk.Label(root, image=tk_img)
     label.pack()
-    root.mainloop()
+    root.mainloop() 
 
 def chek_pdf(amount_ballance: str, amount: int, card_num: str):
     png_path = f"Chek.png"
@@ -53,19 +52,8 @@ def chek_pdf(amount_ballance: str, amount: int, card_num: str):
     
     c.save()
 
-    show_ticket(png_path)
+    show_chek(png_path)
     return png_path
-
-def card_secret(card_num : str):
-    card_num = list(card_num)
-    card_num[6: -4] = '*' * 6
-    num = card_num
-
-    card_num = ""
-    for i in num:
-        card_num = card_num + i
-
-    return card_num
 
 def chek(amount_ballance: int = 0, card_num: str = "1234567890123456", bool: bool = False, amount: int = None):
         card_num = card_secret(card_num)

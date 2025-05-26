@@ -31,18 +31,19 @@ class Bus(Transport):
     def get_transport_and_price(self):
         return 50000, self.name
     
-def get_transport_and_price():
+def get_transport():
     transports = (Train(), Flight(), Bus())
     print(f"Mavjud transport turlari: {[transport.name for transport in transports]}")
 
     choice = input("Transport turini kiriting (Train, Flight, Bus): ").strip().lower()
+
     if not choice:
         print("Iltimos, transport turini kiriting.")
-        return get_transport_and_price()
+        return get_transport()
     
     if choice not in [transport.name.lower() for transport in transports]:
         print("Noto'g'ri transport turi. Iltimos, qaytadan urinib ko'ring.")
-        return get_transport_and_price()
+        return get_transport()
     
     for transport in transports:
         if choice == transport.name.lower():

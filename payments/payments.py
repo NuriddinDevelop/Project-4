@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import random
 from chek import *
-from main import *
+from functions import *
 
 card_numbers = []
 
@@ -14,6 +14,8 @@ def create_card_number():
         return create_card_number()
     card_numbers.append(num)
     return num
+
+cards = {}
 
 class PaymentProcessor(ABC):
     def __init__(self):
@@ -50,14 +52,30 @@ class PaymentProcessor(ABC):
         else:
             print("Yaroqsiz miqdor")
 
-    def withdraw(self, amount: int):
-        if amount > self.__amount:
-            print("Sizda yetarli mablag' yo'q.")
-            return False
-        self.__amount -= amount
-        return True
-    
+    def cancel_payment(self, amount: int):
+        self.__amount += amount
 
+    def withdraw(self, amount):
+        if amount > float(self.__amount):
+            print("Sizda yetarli mablag' yo'q.")
+            choice = input(f"Tanlang (1: Hisobni to'ldirish, 2-to'lovni bekor qilish):")
+            if choice == "1":
+                self.deposit()
+                return self.withdraw(amount)
+            elif choice == "2":
+                print("To'lov bekor qilindi.")
+                return False
+            else:
+                print("Noto'g'ri tanlov. Iltimos, qaytadan urinib ko'ring.")
+                return self.withdraw(amount)
+        self.__amount -= amount
+        return amount
+    
+    def create_card(self, name: str):
+        self.__card_number = create_card_number()
+        cards[name] = self.__card_number, self
+        print(f"Karta yaratildi. Karta raqami: {card_secret(self.__card_number)}")
+        return self
 
 class CreditCardPayment(PaymentProcessor):
     def process_payment(self, amount):
@@ -65,6 +83,9 @@ class CreditCardPayment(PaymentProcessor):
         withdraw = self.withdraw(amount)
         if withdraw:
             print(f"Kredit karta orqali {amount} so'm to'lov amalga oshirildi. Qolgan balans: {self.amount} so'm. Karta raqami: {card_secret(self.card_number)}")
+            return withdraw
+        else:
+            return False
 
 class PayPalPayment(PaymentProcessor):
     def process_payment(self, amount):
@@ -72,8 +93,9 @@ class PayPalPayment(PaymentProcessor):
         withdraw = self.withdraw(amount)
         if withdraw:
             print(f"PayPal orqali {amount} so'm to'lov amalga oshirildi. Qolgan balans: {self.amount} so'm. Karta raqami: {card_secret(self.card_number)}")
+            return withdraw
         else:
-            print("To'lov amalga oshirilmadi. Balansni tekshiring.")
+            return False
 
 class CryptoPayment(PaymentProcessor):
     def process_payment(self, amount):
@@ -81,21 +103,37 @@ class CryptoPayment(PaymentProcessor):
         withdraw = self.withdraw(amount)
         if withdraw:
             print(f"Kripto to'lov orqali {amount} so'm to'lov amalga oshirildi. Qolgan balans: {self.amount} so'm. Karta raqami: {card_secret(self.card_number)}")
+            return withdraw
         else:
-            print("To'lov amalga oshirilmadi. Balansni tekshiring.")
+            return False
 
-def get_payment_processor():
-    processors = {
-        "credit": CreditCardPayment,
-        "paypal": PayPalPayment,
-        "crypto": CryptoPayment
-    }
-    
-    print("Mavjud to'lov tizimlari: ", list(processors.keys()))
-    choice = input("To'lov tizimini tanlang (credit, paypal, crypto): ").strip().lower()
-    
-    if choice not in processors:
+def get_payment_processor_method(name):
+    print("Qaysi to'lov usuli orqali karta ochmoqchisiz?")
+    print("1. Kredit karta")
+    print("2. PayPal")
+    print("3. Kripto to'lov")
+
+    choice = input("Tanlovingizni kiriting (1/2/3): ")
+    if choice == "1":
+        return CreditCardPayment().create_card(name)
+    elif choice == "2":
+        return PayPalPayment().create_card(name)
+    elif choice == "3":
+        return CryptoPayment().create_card(name)
+    else:
         print("Noto'g'ri tanlov. Iltimos, qaytadan urinib ko'ring.")
-        return get_payment_processor()
+        return get_payment_processor_method(name)
+
+def make_payment(price: int, name: str):
+    if name not in cards:
+        print("Sizda hali karta mavjud emas. Iltimos, avval karta yarating.")
+        return None
+
+    price = float(price)
+
+    choice = cards[name][1].process_payment(price)
+    if not choice:
+        print("To'lov amalga oshirilmadi.")
+        return None
+    return choice
     
-    return processors[choice]()

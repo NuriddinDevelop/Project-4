@@ -11,7 +11,7 @@ class PromoCodeDiscount(DiscountStrategy):
             "PROMO20": 0.20,
             "PROMO30": 0.30
         }
-        print(f"Promo kodlar: {list(promo_codes.keys())}")
+        print(f"Promo kodlar: {tuple(promo_codes.keys())}")
         promo_code = input("Promo kodni kiriting: ")
         if promo_code not in promo_codes:
             print("Noto'g'ri promo kod. Iltimos, qaytadan urinib ko'ring.")
@@ -20,13 +20,26 @@ class PromoCodeDiscount(DiscountStrategy):
         for code, discount in promo_codes.items():
             if promo_code == code:
                 print(f"Promo kodi {code} muvaffaqiyatli qo'llanildi!")
-                return price * (1 - discount)
+                return str(price * (1 - discount))
 
 class LoyaltyDiscount(DiscountStrategy):
     def apply_discount(self, price):
-        return price * (1 - 0.15)
+        return str(price * (1 - 0.15))
 
 class NoDiscount(DiscountStrategy):
     def apply_discount(self, price):
-        return price
-    
+        return str(price)
+
+def choice_discount(amount):
+    discounts = [PromoCodeDiscount(), LoyaltyDiscount(), NoDiscount()]
+    choice = input("Chegirma tanlang (1 - Promo kod, 2 - Sodiqlik, 3 - Hech qanday chegirma yo'q): ")
+
+    if choice == "1":
+        return discounts[0].apply_discount(amount)
+    elif choice == "2":
+        return discounts[1].apply_discount(amount)
+    elif choice == "3":
+        return discounts[2].apply_discount(amount)
+    else:
+        print("Noto'g'ri tanlov. Iltimos, qaytadan urinib ko'ring.")
+        return choice_discount()
