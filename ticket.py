@@ -22,7 +22,7 @@ def create_ticket_pdf(name: str, passport: str, transport_type: str = None, pric
     elif len(ticket_num) == 2:
         ticket_num = "0" + ticket_num
 
-    price = str(price) + " so'm"
+    new_price = str(price) + " so'm"
 
     route = get_route
     date = get_date
@@ -52,7 +52,7 @@ def create_ticket_pdf(name: str, passport: str, transport_type: str = None, pric
         ("Yo'nalish", route),
         ("Sana", date),
         ("Vaqt", time),
-        ("Narx", price)
+        ("Narx", new_price)
     ]
     for label, value in fields:
         c.setFont("Helvetica", 30)

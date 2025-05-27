@@ -9,9 +9,8 @@ def get_int():
         return get_int()     
 
 letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789-_"
-
-
 ids = []
+
 def generate_id():
     id = ""
     for i in range(random.randint(5, 15)):

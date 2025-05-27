@@ -14,3 +14,15 @@
 # from users import users
 # admin = users.Admin()
 # print(admin.get_user_info())
+
+dict1 = {
+    "Apple": (10, "Fruit"),
+    "Carrot": (5, "Vegetable"),
+    "Banana": (8, "Fruit"),
+    "Broccoli": (7, "Vegetable"),
+    "Orange": (12, "Fruit"),
+}
+
+for key, (amaunt, type) in dict1.items():
+    print(f"{key} - {amaunt} so'm, {type}")
+    
